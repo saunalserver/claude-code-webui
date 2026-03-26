@@ -1,118 +1,34 @@
 # Claude Code WebUI
 
-Multi-session web interface for Claude Code with `--dangerously-skip-permissions` support.
+A sophisticated, multi-session web interface for the **Claude Code** CLI. This tool provides a powerful browser-based environment for AI-assisted development, featuring real-time terminal streaming and persistent session management.
 
-## Features
+## ✨ Key Features
+- **Multi-Session Dashboard**: Run and manage multiple Claude Code sessions simultaneously in separate browser tabs.
+- **Real-time Terminal Streaming**: Experience low-latency terminal output powered by `xterm.js` and WebSockets.
+- **PTY Session Management**: Full PTY support via `node-pty`, providing a true terminal environment for Claude Code.
+- **Persistent History**: Terminal history is maintained server-side, allowing you to reconnect to active sessions without losing context.
+- **Integrated Image Support**: Secure, in-memory screenshot upload capabilities designed specifically for providing visual context to Claude.
+- **Tailscale Ready**: Optimized for remote access via Tailscale, allowing you to code from anywhere securely.
 
-- **Multi-Session Dashboard**: Run multiple Claude Code sessions simultaneously
-- **Per-Tab Isolation**: Each browser tab spawns a fresh `claude --dangerously-skip-permissions` session
-- **Session Persistence**: Sessions continue running on server, browser can reconnect
-- **Real-time Streaming**: WebSocket-based real-time communication
-- **Clean UI**: Dark-themed interface inspired by modern terminal emulators
+## 🛠️ Tech Stack
+- **Backend**: Node.js, Express, WebSocket (`ws`), `node-pty`
+- **Frontend**: `xterm.js`, Vanilla JavaScript, CSS
+- **Deployment**: Docker, Docker Compose
 
-## Quick Start
+## 🚀 Quick Start (Docker)
+The easiest way to run Claude Code WebUI is via Docker:
 
-### Docker Deployment (Recommended)
+1. **Configure volumes**: Ensure your `.claude` config directory is accessible.
+2. **Launch**:
+   ```bash
+   docker compose up -d --build
+   ```
+3. **Access**: Open `http://localhost:3420` in your browser.
 
-**Safe restart (ensures clean state):**
-```bash
-cd /path/to/claude-code-webui
-./restart.sh
-```
-
-**Or manual:**
-```bash
-cd /path/to/claude-code-webui
-docker compose down  # Ensures clean state
-docker compose up -d --build
-```
-
-Access at: http://localhost:3420 or http://YOUR_SERVER_IP:3420
-
-### Local Development
-
-```bash
-cd /path/to/claude-code-webui
-npm install
-npm start
-```
-
-Access at: http://localhost:3420
-
-## Troubleshooting
-
-**Site not loading (port 3420 not accessible):**
-```bash
-# Check container status
-docker compose ps
-
-# If ports column is empty, container lost its port mapping. Fix with:
-./restart.sh
-
-# Or manually:
-docker compose down
-docker compose up -d --build
-```
-
-**Container keeps restarting:**
-```bash
-# Check logs
-docker logs claude-code-webui --tail 100
-
-# Common issues:
-# - Port 3420 already in use: kill the process using it
-ss -tlnp | grep 3420
-# Then kill the PID shown
-```
-
-**Tab switching glitches:**
-- Fixed in latest version - each tab now has its own DOM container
-- Try reloading the page if issues persist
-
-## Usage
-
-1. Open the web interface
-2. Click **"+ New Terminal"** to spawn a new Claude Code session
-3. Each session runs with `--dangerously-skip-permissions` (auto-approves tools)
-4. Switch between sessions using the tabs
-5. Sessions persist even if you close the browser
-
-## Architecture
-
-```
-┌─────────────┐     WebSocket     ┌─────────────┐
-│   Browser   │ ◄──────────────► │   Node.js   │
-│   (Tabs)    │                   │   Server    │
-└─────────────┘                   └──────┬──────┘
-                                          │
-                                          │ spawns
-                                          ▼
-                                  ┌──────────────┐
-                                  │   Claude     │
-                                  │   Code CLI   │
-                                  │  (--dangerous)│
-                                  └──────────────┘
-```
-
-## Project Structure
-
-```
-claude-code-webui/
-├── server.js           # WebSocket server & Claude Code spawner
-├── package.json        # Dependencies
-├── Dockerfile          # Container image
-├── docker-compose.yml  # Deployment config
-└── public/
-    ├── index.html      # Frontend UI
-    ├── style.css       # Dark theme styles
-    └── app.js          # WebSocket client & UI logic
-```
-
-## Configuration
-
-Environment variables:
+## 🔧 Configuration
+The application can be configured via environment variables:
 - `PORT`: Server port (default: 3420)
+- `PUBLIC_URL`: Base URL for serving uploaded images (optional)
 
-## License
-
+## 🛡️ License
 MIT
