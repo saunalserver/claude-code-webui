@@ -86,12 +86,16 @@ body {
   font-size: 13px;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: background-color 0.1s ease, border-color 0.1s ease, color 0.1s ease;
   user-select: none;
 }
 
 .tab:hover {
   background: var(--bg-hover);
+}
+
+.tab:active {
+  transform: scale(0.98);
 }
 
 .tab.active {
@@ -122,16 +126,22 @@ body {
   justify-content: center;
   border-radius: 3px;
   opacity: 0;
-  transition: all 0.1s ease;
+  transition: all 0.15s ease;
+  cursor: pointer;
 }
 
 .tab:hover .tab-close {
-  opacity: 0.7;
+  opacity: 1;
 }
 
 .tab .tab-close:hover {
   background: var(--error-color);
-  opacity: 1;
+  transform: scale(1.1);
+}
+
+.tab .tab-close:active {
+  transform: scale(0.95);
+  background: var(--error-color);
 }
 
 .new-tab-btn {
@@ -145,13 +155,18 @@ body {
   border-radius: 4px;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: all 0.15s ease;
   flex-shrink: 0;
 }
 
 .new-tab-btn:hover {
   background: var(--bg-hover);
   color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+.new-tab-btn:active {
+  transform: scale(0.95);
 }
 
 /* Main Layout */
@@ -190,12 +205,16 @@ body {
   border-bottom: 1px solid var(--border-color);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: all 0.15s ease;
 }
 
 .sidebar-toggle:hover {
   background: var(--bg-hover);
   color: var(--text-primary);
+}
+
+.sidebar-toggle:active {
+  transform: scale(0.98);
 }
 
 .sidebar-content {
@@ -320,12 +339,41 @@ body {
   border-radius: 3px;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: all 0.15s ease;
 }
 
 .upload-item-copy:hover {
   background: var(--accent-color);
   color: white;
+  transform: scale(1.1);
+}
+
+.upload-item-copy:active {
+  transform: scale(0.95);
+}
+
+.upload-item-delete {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.upload-item-delete:hover {
+  background: var(--error-color);
+  color: white;
+  transform: scale(1.1);
+}
+
+.upload-item-delete:active {
+  transform: scale(0.95);
 }
 
 /* Terminal Area */

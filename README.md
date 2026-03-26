@@ -16,23 +16,23 @@ Multi-session web interface for Claude Code with `--dangerously-skip-permissions
 
 **Safe restart (ensures clean state):**
 ```bash
-cd /home/saunalserver/projects/claude-code-webui
+cd /path/to/claude-code-webui
 ./restart.sh
 ```
 
 **Or manual:**
 ```bash
-cd /home/saunalserver/projects/claude-code-webui
+cd /path/to/claude-code-webui
 docker compose down  # Ensures clean state
 docker compose up -d --build
 ```
 
-Access at: http://localhost:3420 or http://100.96.197.39:3420 (Tailscale)
+Access at: http://localhost:3420 or http://YOUR_SERVER_IP:3420
 
 ### Local Development
 
 ```bash
-cd /home/saunalserver/projects/claude-code-webui
+cd /path/to/claude-code-webui
 npm install
 npm start
 ```

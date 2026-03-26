@@ -88,6 +88,21 @@ function handleMessage(message) {
       sessions.set(message.payload.id, message.payload);
       addTab(message.payload);
       switchToSession(message.payload.id);
+
+      // Send initial prompt if pending
+      if (window._pendingInitialPrompt) {
+        debug('Sending initial prompt:', window._pendingInitialPrompt);
+        setTimeout(() => {
+          sendToServer({
+            type: 'send_input',
+            payload: {
+              sessionId: message.payload.id,
+              input: window._pendingInitialPrompt + '\r'
+            }
+          });
+          window._pendingInitialPrompt = null;
+        }, 1500); // Wait for Claude Code to start
+      }
       break;
 
     case 'output':
@@ -283,6 +298,11 @@ function addTab(session) {
   closeBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     debug('Close button clicked:', session.id);
+
+    // Add immediate visual feedback
+    tab.style.opacity = '0.5';
+    tab.style.pointerEvents = 'none';
+
     closeSession(session.id);
   });
 
@@ -392,14 +412,19 @@ function sendToServer(message) {
   }
 }
 
-function createNewSession() {
-  debug('Creating new session');
+function createNewSession(cwd = '/home/saunalserver', initialPrompt = null) {
+  debug('Creating new session with cwd:', cwd);
   sendToServer({
     type: 'create_session',
     payload: {
-      cwd: '/home/claude/workspace'
+      cwd: cwd
     }
   });
+
+  // Store initial prompt to send after session is ready
+  if (initialPrompt) {
+    window._pendingInitialPrompt = initialPrompt;
+  }
 }
 
 function closeSession(sessionId) {
@@ -498,6 +523,14 @@ function addUploadToList(upload) {
         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
       </svg>
     </button>
+    <button class="upload-item-delete" title="Delete">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3,6 5,6 21,6"/>
+        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"/>
+        <line x1="10" y1="11" x2="10" y2="17"/>
+        <line x1="14" y1="11" x2="14" y2="17"/>
+      </svg>
+    </button>
   `;
 
   item.querySelector('.upload-item-copy').addEventListener('click', () => {
@@ -509,6 +542,20 @@ function addUploadToList(upload) {
     }, 1500);
   });
 
+  item.querySelector('.upload-item-delete').addEventListener('click', async () => {
+    if (confirm(`Delete "${upload.filename}"?`)) {
+      const deleteBtn = item.querySelector('.upload-item-delete');
+      // Add immediate visual feedback
+      deleteBtn.style.transform = 'scale(0.9)';
+      deleteBtn.style.background = 'var(--error-color)';
+      item.style.opacity = '0.5';
+      item.style.pointerEvents = 'none';
+
+      await deleteUpload(upload.id);
+      item.remove();
+    }
+  });
+
   item.querySelector('img').addEventListener('click', () => {
     window.open(upload.url, '_blank');
   });
@@ -517,6 +564,21 @@ function addUploadToList(upload) {
 
   while (uploadsList.children.length > 10) {
     uploadsList.removeChild(uploadsList.lastChild);
+  }
+}
+
+async function deleteUpload(uploadId) {
+  try {
+    const response = await fetch(`/api/uploads/${uploadId}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) {
+      throw new Error('Delete failed');
+    }
+    debug('Deleted upload:', uploadId);
+  } catch (error) {
+    debug('Delete error:', error);
+    alert('Failed to delete upload');
   }
 }
 
@@ -613,6 +675,17 @@ function setupEventListeners() {
 }
 
 // ============================================
+// URL Parameter Parsing
+// ============================================
+function getUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    cwd: params.get('cwd') || '/home/saunalserver',
+    prompt: params.get('prompt') || null
+  };
+}
+
+// ============================================
 // Initialize
 // ============================================
 function init() {
@@ -620,6 +693,17 @@ function init() {
   setupEventListeners();
   connect();
   loadUploads();
+
+  // Check for URL parameters
+  const params = getUrlParams();
+  if (params.cwd !== '/home/saunalserver' || params.prompt) {
+    debug('Auto-creating session from URL params:', params);
+    // Wait for WebSocket connection before creating session
+    ws.addEventListener('open', () => {
+      createNewSession(params.cwd, params.prompt);
+    }, { once: true });
+  }
+
   debug('Initialization complete');
 }
 

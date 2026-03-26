@@ -1,4 +1,6 @@
 import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config();
 import { WebSocketServer, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import pty from 'node-pty';
@@ -169,6 +171,19 @@ app.get('/api/uploads', (req, res) => {
   res.json(uploads);
 });
 
+// Delete uploaded file
+app.delete('/api/uploads/:id', (req, res) => {
+  const uploadId = req.params.id;
+
+  if (uploadStore.has(uploadId)) {
+    uploadStore.delete(uploadId);
+    console.log(`[Delete] Removed upload ${uploadId} (store size: ${uploadStore.size})`);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Upload not found' });
+  }
+});
+
 // ============================================
 // Server & WebSocket
 // ============================================
@@ -313,8 +328,7 @@ function createSession(ws, payload) {
     createdAt: new Date().toISOString(),
     pty: ptyProcess,
     history: [],  // Stores terminal output for reconnect persistence
-    historySize: 0,  // Track total size to limit memory usage
-    setupHandled: false  // Track if we've auto-selected the theme
+    historySize: 0  // Track total size to limit memory usage
   };
 
   sessions.set(sessionId, session);
@@ -325,19 +339,6 @@ function createSession(ws, payload) {
   }
   connections.get(sessionId).add(ws);
 
-  // Send "1" + Enter immediately to auto-select theme and bypass setup screen
-  // This must be done before any output processing
-  setTimeout(() => {
-    if (session.pty && !session.setupHandled) {
-      ptyProcess.write('1\r');
-      session.setupHandled = true;
-      console.log(`Auto-selected theme for session ${sessionId}`);
-    }
-  }, 1000);  // 1 second delay for Claude Code to start
-
-  // Buffer to detect theme setup screen (backup method)
-  let outputBuffer = '';
-
   // Forward PTY output to all connected clients and store in history
   ptyProcess.onData((data) => {
     // Store in history (limit to ~100KB to prevent memory issues)
@@ -345,25 +346,6 @@ function createSession(ws, payload) {
     if (session.historySize + data.length < MAX_HISTORY_SIZE) {
       session.history.push(data);
       session.historySize += data.length;
-    }
-
-    // Auto-select theme on first-run setup screen
-    if (!session.setupHandled) {
-      outputBuffer += data;
-      // Check for theme setup screen (case-insensitive)
-      if (outputBuffer.toLowerCase().includes('let\'s get started') ||
-          outputBuffer.toLowerCase().includes('choose the text style')) {
-        // Send "1" + Enter to select first option (Dark mode)
-        setTimeout(() => {
-          ptyProcess.write('1\r');
-          session.setupHandled = true;
-          console.log(`Auto-selected theme for session ${sessionId}`);
-        }, 500);  // Small delay to ensure screen is fully rendered
-      }
-      // Keep buffer manageable
-      if (outputBuffer.length > 1000) {
-        outputBuffer = outputBuffer.slice(-500);
-      }
     }
 
     broadcastToSession(sessionId, {
