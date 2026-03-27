@@ -267,16 +267,16 @@ wss.on('connection', (ws, req) => {
 
 function createSession(ws, payload) {
   const sessionId = `term-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  // Use same paths as host for consistency (mount now uses /home/saunalserver both inside and outside)
-  const cwd = payload?.cwd || '/home/saunalserver';
+  // Use configurable home directory
+  const cwd = payload?.cwd || process.env.HOME || '/home/appuser';
 
   console.log(`Creating PTY session ${sessionId} in ${cwd}`);
 
-  // Read settings to pass all env vars to claude
+  // Read settings to pass all env vars to CLI
   let envVars = {};
   try {
-    // Settings are now at /home/saunalserver/.claude/settings.json (consistent with host)
-    const settingsPath = path.join('/home/saunalserver', '.claude', 'settings.json');
+    const homeDir = process.env.HOME || '/home/appuser';
+    const settingsPath = path.join(homeDir, '.claude', 'settings.json');
     if (fs.existsSync(settingsPath)) {
       const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
       envVars = { ...settings.env };
@@ -284,23 +284,17 @@ function createSession(ws, payload) {
       if (envVars.ANTHROPIC_AUTH_TOKEN && envVars.ANTHROPIC_API_KEY === envVars.ANTHROPIC_AUTH_TOKEN) {
         delete envVars.ANTHROPIC_API_KEY;
       }
-      console.log('Loaded settings from /home/saunalserver/.claude/settings.json');
+      console.log(`Loaded settings from ${settingsPath}`);
     }
   } catch (e) {
     console.log('Could not read settings:', e.message);
   }
 
-  // Debug: log the auth token being used
-  console.log('Auth token (first 20 chars):', envVars.ANTHROPIC_AUTH_TOKEN?.slice(0, 20) || 'none');
-  console.log('API key (first 20 chars):', envVars.ANTHROPIC_API_KEY?.slice(0, 20) || 'none');
-  console.log('Base URL:', envVars.ANTHROPIC_BASE_URL || 'default');
-  console.log('Z_AI_API_KEY (first 20 chars):', envVars.Z_AI_API_KEY?.slice(0, 20) || 'none');
-
-  // Create the full environment with correct HOME (now consistent with host)
+  // Create the full environment with correct HOME
   const ptyEnv = {
     ...process.env,
-    HOME: '/home/saunalserver',
-    USER: 'saunalserver',
+    HOME: process.env.HOME || '/home/appuser',
+    USER: process.env.USER || 'appuser',
     ...envVars
   };
 
