@@ -189,9 +189,8 @@ app.delete('/api/uploads/:id', (req, res) => {
 // ============================================
 
 const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Claude Code WebUI running on http://0.0.0.0:${PORT}`);
-  console.log(`Access via Tailscale: http://100.96.197.39:${PORT}`);
-  console.log(`Workspace: /home/saunalserver (same path in container and on host)`);
+  console.log(`AI Terminal WebUI running on http://0.0.0.0:${PORT}`);
+  console.log(`CLI: ${process.env.CLI_COMMAND || 'claude'}`);
   console.log(`Upload TTL: 48 hours (in-memory storage)`);
 });
 
@@ -305,15 +304,11 @@ function createSession(ws, payload) {
     ...envVars
   };
 
-  // Debug: log key env vars that will be passed to PTY
-  console.log('PTY will have HOME:', ptyEnv.HOME);
-  console.log('PTY will have ANTHROPIC_AUTH_TOKEN:', ptyEnv.ANTHROPIC_AUTH_TOKEN?.slice(0, 20) + '...' || 'none');
-  console.log('PTY will have ANTHROPIC_API_KEY:', ptyEnv.ANTHROPIC_API_KEY?.slice(0, 20) + '...' || 'none');
-  console.log('PTY will have ANTHROPIC_BASE_URL:', ptyEnv.ANTHROPIC_BASE_URL || 'none');
-  console.log('PTY will have Z_AI_API_KEY:', ptyEnv.Z_AI_API_KEY?.slice(0, 20) + '...' || 'none');
+  // Create a PTY - run configurable CLI with settings from environment
+  const CLI_COMMAND = process.env.CLI_COMMAND || 'claude';
+  const CLI_ARGS = process.env.CLI_ARGS ? process.env.CLI_ARGS.split(' ') : ['--dangerously-skip-permissions'];
 
-  // Create a PTY - run claude with all settings from environment
-  const ptyProcess = pty.spawn('claude', ['--dangerously-skip-permissions'], {
+  const ptyProcess = pty.spawn(CLI_COMMAND, CLI_ARGS, {
     name: 'xterm-color',
     cwd: cwd,
     env: ptyEnv,
