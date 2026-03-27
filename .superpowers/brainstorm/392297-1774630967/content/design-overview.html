@@ -1,0 +1,45 @@
+<h2>Design: AI Terminal WebUI</h2>
+<p class="subtitle">Revamped multi-session terminal interface for AI CLIs</p>
+
+<div class="section">
+  <h3>Project Goals</h3>
+  <ul>
+    <li><strong>Portfolio showcase:</strong> Professional, polished code visible to recruiters</li>
+    <li><strong>Genuinely usable:</strong> Others can self-host with their own AI CLI tools</li>
+    <li><strong>AI-agnostic:</strong> Support Claude Code, Gemini CLI, Codex, and others via configuration</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>Core Features</h3>
+  <ul>
+    <li>Multi-session terminal tabs with xterm.js</li>
+    <li>Configurable AI CLI (claude, gemini, codex, custom)</li>
+    <li>File upload sidebar with shareable URLs</li>
+    <li>Session persistence (reconnect to active sessions)</li>
+    <li>Dark mode support</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>Technical Stack</h3>
+  <ul>
+    <li><strong>Backend:</strong> Node.js, Express, WebSocket, node-pty</li>
+    <li><strong>Frontend:</strong> xterm.js, Vanilla JS, CSS</li>
+    <li><strong>Deployment:</strong> Docker with docker-compose</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>Key Changes from Current</h3>
+  <ul>
+    <li>Remove hardcoded personal info (Tailscale IP, paths, usernames)</li>
+    <li>Fix Docker user inconsistency (node vs saunalserver)</li>
+    <li>Add CLI configuration via environment variables</li>
+    <li>Modernize UI with clean SaaS design</li>
+    <li>Improve setup script for better UX</li>
+    <li>Add proper .gitignore for sensitive files</li>
+  </ul>
+</div>
+
+<p>Does this overview capture what you're looking for?</p>

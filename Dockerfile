@@ -12,36 +12,36 @@ RUN apt-get update && apt-get install -y \
 RUN npm install -g @anthropic-ai/claude-code
 
 # Create non-root user for running claude (required for --dangerously-skip-permissions)
-# Use saunalserver user with UID 1000 to match host
+# Use appuser user with UID 1000 to match host
 RUN deluser node && \
-    useradd -m -u 1000 -s /bin/bash saunalserver && \
-    mkdir -p /home/saunalserver/projects/claude-code-webui && \
-    chown -R saunalserver:saunalserver /home/saunalserver
+    useradd -m -u 1000 -s /bin/bash appuser && \
+    mkdir -p /home/appuser && \
+    chown -R appuser:appuser /home/appuser
 
 # Set working directory for the app
-WORKDIR /home/saunalserver/projects/claude-code-webui
+WORKDIR /home/appuser
 
 # Copy package files
 COPY package.json package-lock.json* ./
 
 # Install dependencies (as root, then chown)
 RUN npm ci --only=production && \
-    chown -R saunalserver:saunalserver /home/saunalserver/projects/claude-code-webui
+    chown -R appuser:appuser /home/appuser
 
 # Copy application files
-COPY --chown=saunalserver:saunalserver . .
+COPY --chown=appuser:appuser . .
 
 # Switch to non-root user
-USER saunalserver
+USER appuser
 
 # Expose port
 EXPOSE 3420
 
-# Set default environment (now using consistent paths)
+# Set default environment
 ENV PORT=3420
 ENV NODE_ENV=production
-ENV HOME=/home/saunalserver
-ENV USER=saunalserver
+ENV HOME=/home/appuser
+ENV USER=appuser
 
 # Start the server
 CMD ["npm", "start"]

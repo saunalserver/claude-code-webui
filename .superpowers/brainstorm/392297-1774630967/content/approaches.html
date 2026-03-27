@@ -1,0 +1,71 @@
+<h2>Three Approaches</h2>
+<p class="subtitle">Given the requirements, here are 3 implementation strategies</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Minimal Cleanup</h3>
+      <p>Keep existing architecture, just remove personal info, fix Docker issues, add CLI configuration, polish UI.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <ul>
+            <li>Fast to implement</li>
+            <li>Low risk</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <ul>
+            <li>Still has some hardcoded elements</li>
+            <li>Not as impressive</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Full Refactor</h3>
+      <p>Rebuild from scratch with modern stack (Vite + vanilla JS). Clean architecture, proper security, file storage options.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <ul>
+            <li>Professional, clean codebase</li>
+            <li>More impressive to recruiters</li>
+            <li>Easier to maintain</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <ul>
+            <li>More work</li>
+            <li>May introduce new issues</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Hybrid</h3>
+      <p>Keep core architecture but modernize specific parts. Fix Docker issues, remove personal info, add S3 option for file upload.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <ul>
+            <li>Balances effort and risk</li>
+            <li>Keeps proven xterm.js/PTY</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <ul>
+            <li>Inconsistent tech stack</li>
+            <li>More complex to test</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

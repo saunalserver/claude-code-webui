@@ -1,0 +1,26 @@
+<h2>Feature: Session Persistence</h2>
+<p class="subtitle">Reconnect to terminal without losing history</p>
+
+<div class="section">
+  <h3>How it Works</h3>
+  <ul>
+    <li>Terminal output stored in memory (100KB buffer per session)</li>
+    <li>History persists across page refresh (up to 100KB)</li>
+    <li>On reconnect, frontend requests missed history from server</li>
+    <li>Server sends history to reconnected client</li>
+  </ul>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">Session Lifecycle</div>
+  <div class="mockup-body">
+    <ol>
+      <li>User creates/ connects via WebSocket</li>
+      <li>Server creates PTY process with configured CLI</li>
+      <li>Terminal streams to frontend via WebSocket</li>
+      <li>Frontend stores history in memory (up to 100KB)</li>
+      <li>On reconnect, server replays missing history and sends current history</li>
+      <li>PTY exits, server kills PTY process,li>
+    </ol>
+  </div>
+</div>

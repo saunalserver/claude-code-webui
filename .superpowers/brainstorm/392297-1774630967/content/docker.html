@@ -1,0 +1,63 @@
+<h2>Deployment: Docker Setup</h2>
+<p class="subtitle">Production-ready containerization</p>
+
+<div class="section">
+  <h3>Key Changes</h3>
+  <ul>
+    <li>Remove hardcoded user (<code>saunalserver</code>)</li>
+    <li>Use configurable <code>APPuser</code> environment variable</li>
+    <li>Fix volume mount paths (use <code>~/.claude</code> instead of hardcoded <code>/home/saunalserver</code>)</li>
+    <li>Improve dockerfile (use <code>claude-code-webui</code> image, proper versioning)</li>
+    <li>Update documentation with clearer setup instructions</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>Dockerfile</h3>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">Before & After</div>
+  <div class="mockup-body">
+    <pre><span class="language-dockerfile">
+FROM node:20-slim
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN deluser node && \
+    useradd -m -u 1000 -s /bin/bash saunalserver && \
+    mkdir -p /home/saunalserver/projects/claude-code-webui && \
+    chown -R saunalserver:saunalserver /home/saunalserver/projects/claude-code-webui
+
+    chown -R saunalserver:saunalserver /home/saunalserver/projects/claude-code-webui
+else:
+  echo "user must be 'saunalserver' for --dangerously-skip-permissions"
+  exit 0
+fi
+
+USERadd -m -u 1000 -s /bin/bash appuser
+RUN groupadd -G appuser --system --useradd --gid ${Gond} --group docker
+
+RUN mkdir -p /home/saunalserver/projects/claude-code-webui/uploads && \
+    chown -R saunalserver:saunalserver/ ${Gond}:/home/saunalserver/projects/claude-code-webui/uploads
+RUN chmod 777 /home/saunalserver/projects/claude-code-webui/uploads
+
+RUN echo "user must be 'saunalserver' for --dangerously-skip-permissions"
+  exit 0
+fi</span></pre><div class="mockup-body" style="font-family: system; background: #333;">
+<div class="mockup-body" style="border: 1px solid #ccc; border-radius: 8px; padding: 16px 12px 16px;">
+  color: #2a3b3;
+          background: #333;
+          border-radius: 8px;
+        }
+      }
+    </div>
+  </div>
+</div>

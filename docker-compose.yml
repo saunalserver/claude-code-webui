@@ -8,16 +8,15 @@ services:
     privileged: true
     volumes:
       # Mount workspace directory
-      - ./workspace:/home/node/workspace
-      # Mount Claude Code config for authentication
-      - ~/.claude:/home/node/.claude
+      - ./workspace:/home/appuser/workspace
+      # Mount Claude/Gemini/ etc config for authentication
+      - ~/.claude:/home/appuser/.claude
+      # Mount uploads directory for file sharing
+      - ./uploads:/home/appuser/uploads
     environment:
       - PORT=3420
-      - HOME=/home/node
-      - USER=node
-    networks:
-      - claude-network
-
-networks:
-  claude-network:
-    driver: bridge
+      - CLI_COMMAND=${CLI_COMMAND:-claude}
+      - CLI_ARGS=${CLI_ARGS:----dangerously-skip-permissions}
+      - PUBLIC_URL=${PUBLIC_URL:-}
+      - HOME=/home/appuser
+      - USER=appuser

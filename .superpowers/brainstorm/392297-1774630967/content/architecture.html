@@ -1,0 +1,72 @@
+<h2>Architecture</h2>
+<p class="subtitle">System components and data flow</p>
+
+<div class="section">
+  <h3>Core Components</h3>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">Backend (server.js)</div>
+  <div class="mockup-body">
+    <ul>
+      <li><strong>Express Server:</strong> HTTP server, static file serving, REST API</li>
+      <li><strong>WebSocket Server:</strong> Real-time bidirectional communication</ terminal</li>
+      <li><strong>Session Manager:</strong> PTY process lifecycle management</li>
+      <li><strong>Upload Handler:</strong> File upload, storage, serving</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Frontend Components</h3>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">Frontend (public/)</div>
+  <div class="mockup-body">
+    <ul>
+      <li><strong>Terminal View:</strong> xterm.js terminal emulator</li>
+      <li><strong>Tab Manager:</strong> Multi-session tab handling</li>
+      <li><strong>Upload Sidebar:</strong> File upload UI with drag & drop</li>
+      <li><strong>WebSocket Client:</strong> Real-time communication with backend</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Data Flow</h3>
+</div>
+
+<div class="mockup">
+  <div class="mockup-body">
+    <ol>
+      <li>User opens browser, connects via WebSocket</li>
+      <li>Creates/attaches to terminal session</li>
+      <li>Backend spawns PTY process with configured CLI</li>
+      <li>Terminal output streamed back to frontend via WebSocket</li>
+      <li>User input sent to PTY via WebSocket</li>
+    </ol>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Configuration</h3>
+</div>
+
+<p>Environment variables (in <code>.env</code>):</p>
+
+<ul>
+  <li><code>CLI_COMMAND</code> - CLI to run (e.g., <code>claude</code>, <code>gemini</code>, <code>codex</code>)  <code>default: claude</code></li>
+  <li><code>CLI_ARGS</code> - CLI arguments (e.g., <code>--dangerously-skip-permissions</code>)
+    <code>default: --dangerously-skip-permissions</code></li>
+  <li><code>PORT</code> - Server port
+    <code>default: 3420</code></li>
+  <li><code>UPLOAD_DIR</code> - Directory for uploaded files
+    <code>default: ./uploads</code></li>
+  <li><code>MAX_FILE_SIZE</code> - Max upload size in bytes
+    <code>default: 10485760</code> (10MB)</li>
+  <li><code>UPLOAD_TTL</code> - Time to keep uploads in hours
+    <code>default: 48</code></li>
+</ul>
+
+<p>Does this look right? Any changes needed?</p>

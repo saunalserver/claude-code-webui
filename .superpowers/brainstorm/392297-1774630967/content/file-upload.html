@@ -1,0 +1,36 @@
+<h2>Feature: File Upload Sidebar</h2>
+<p class="subtitle">Upload files, get shareable URLs for AI see your context</p>
+
+<div class="mockup">
+  <div class="mockup-header">Sidebar Panel</div>
+  <div class="mockup-body">
+    <ul>
+      <li>Drag-and drop images or files</li>
+      <li>Click to get shareable URL</ li>
+      <li>URL auto-copies to clipboard</li>
+      <li>View uploaded files with thumbnails</li>
+      <li>Delete files when no longer needed</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Storage Options</h3>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="memory" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>In-memory</h3>
+      <p>Default. Fast. 48-hour TTL. Max 100 files. No persistence across restart.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="disk" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>disk volume</h3>
+      <p>Persistent across restart. Survives restart. Unlimited size limit.</p>
+    </div>
+  </div>
+</div>
